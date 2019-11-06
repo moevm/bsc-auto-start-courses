@@ -1,0 +1,1 @@
+# bsc-auto-start-courses
