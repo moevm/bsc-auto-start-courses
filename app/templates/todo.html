@@ -1,0 +1,36 @@
+<h1>Новая запись</h1>
+<form action="/new" method="POST">
+  <table border=0>
+    <tr>
+      <td>Дело</td>
+      <td><input type="text" name="task"></input></td>
+    <tr>
+      <td>Описание</td>
+      <td><input type="text" name="description"></input></td>
+    </tr>
+    <tr>
+      <td></td>
+      <td><input type="submit" value="Сохранить"></input></td>
+    </tr>
+  </table>
+</form>
+
+<hr>
+
+<h1>Список дел</h1>
+<table border=1>
+  <theader>
+    <tr>
+      <td><b>Дело</b></td>
+      <td><b>Описание</b></td>
+    </tr>
+  </theader>
+  <tbody>
+    {% for item in items %}
+    <tr>
+      <td>{{ item['task'] }}</td>
+      <td>{{ item['description'] }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
