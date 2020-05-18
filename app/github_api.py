@@ -12,8 +12,8 @@ from flask_dance.contrib.github import make_github_blueprint, github
 
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
-CLIENT_ID_GITHUB = 'b7642ad896f5597b5f6b'
-CLIENT_SECRET_GITHUB = '14320921a9af8e0c15a1f2c59ea8eaae043f33e7'
+CLIENT_ID_GITHUB = ''
+CLIENT_SECRET_GITHUB = ''
 SCOPES_GITHUN = 'repo'
 
 github_blueprint = make_github_blueprint(client_id=CLIENT_ID_GITHUB,
