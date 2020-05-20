@@ -78,6 +78,7 @@ def create_template_repo():
       name = subject + '-' + year + '-' + group
       test_in = github.post('/orgs/test-for-docker/repos', json={"name": name, "private": private, "auto_init": 'true'})
       if test_in.status_code == 201:
+        add_protect_rule(name)
         invite_team_one = github.put('/orgs/moevm/teams/cs-teacher/repos/moevm/' + name, json={"permission": 'admin'})
         invite_team_two = github.put('/orgs/moevm/teams/pr-teacher/repos/moevm/' + name, json={"permission": 'admin'})
         invite_info = github.put('/repos/moevm/' + name + '/collaborators/moevm-pull-requests-checker', json={"permission": 'admin'})
@@ -142,3 +143,21 @@ def add_users(ss_id, rep_name):
           "parameters": notfound_emails}
   
   response = script.scripts().run(body=body, scriptId=SCRIPT_ID).execute()
+
+
+def add_protect_rule(rep_name):
+  rule_protect = {
+    "required_status_checks": None,
+    "enforce_admins": None,
+    "required_pull_request_reviews": None,
+    "restrictions": {
+      "users": [
+        "moevm-pull-requests-checker"
+      ],
+      "teams": [
+        "cs_teachers",
+        "pr_teachers"
+      ]
+    }
+  }
+  new_branch = github.put('/repos/test-for-docker/' + rep_name + '/branches/master/protection', json=rule_protect)
