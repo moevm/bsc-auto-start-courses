@@ -160,4 +160,4 @@ def add_protect_rule(rep_name):
       ]
     }
   }
-  new_branch = github.put('/repos/test-for-docker/' + rep_name + '/branches/master/protection', json=rule_protect)
+  new_branch = github.put('/repos/moevm/' + rep_name + '/branches/master/protection', json=rule_protect)
