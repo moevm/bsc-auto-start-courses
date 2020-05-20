@@ -5,6 +5,7 @@ import flask
 import requests
 
 from flask import Flask, render_template, flash, redirect, session, url_for, request, g, Markup
+import datetime
 
 import google.oauth2.credentials
 import google_auth_oauthlib.flow
@@ -77,7 +78,9 @@ def index():
   items_tables = [item for item in _items_tables]
   _items_groups = db.groups.find()
   items_groups = [item for item in _items_groups]
-  return render_template('index.html', form=form, items_tables=items_tables, items_groups=items_groups)
+  now = datetime.datetime.now()
+  year = now.year
+  return render_template('index.html', form=form, items_tables=items_tables, items_groups=items_groups, year=year)
   # return print_index_table()
 
 
@@ -97,7 +100,7 @@ def test_api_request():
     # # API ID from step 3 in Google Sheets/Script section
   API_ID = "MwNcL5k4su6HQgR_MGSBhaEiAo2eQ3wDV"
   SCRIPT_ID = "1xeBCg0u5RHuBEix-I_I9vdNMH-MOUWo3M9yqYfzzgwxHIasrT9kNoqh3"
-  print('good')
+  # print('good')
   table_name = request.form['name']
   list_of_groups = request.form['groups'].split(',')
   # # Instead macro_test select your macro function name 
@@ -131,8 +134,8 @@ def fill_db():
   #   'list_of_groups': [6381, 6382],
   #   'table_id': '13-7o2vG41cjKmbushJlgncHQlAL-a1TPL4HFGIMLvV0'
   # }
-  db.groups.insert_one({'group': 6382,
-                          'table_id': '1nt9MHGaYjhtq-o_Gt-2YcFeJsf0EACG2D9P_mlEKiX4'})
+  db.groups.insert_one({'group': 6381,
+                          'table_id': '1nCdFRoLyiP5gNNbi2dR_Z-y4w5KxGWdACcjr5oHmpnI'})
   return redirect(url_for('index'))
 
 @app.route('/make-spreadsheets', methods=['POST'])

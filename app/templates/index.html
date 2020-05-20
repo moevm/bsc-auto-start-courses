@@ -37,13 +37,21 @@
     <h4 style="text-align: center;" class="mb-3 mt-4">Working with GitHub part<h4>
         <form method="POST" action="/test-github-create-template-repo" class="form-row align-items-end"
           style="font-size: 15px;">
+          <!-- <form method="POST" action="/test-find" class="form-row align-items-end" style="font-size: 15px;"> -->
           <div class="col-md-2 mr-3">
             <label for="subject">Название предмета</label>
             <input type="text" name="subject" class="form-control">
           </div>
           <div class="col-md-2 mr-3">
             <label for="subject">Год</label>
-            <input type="text" name="year" class="form-control">
+            <input type="text" name="year" class="form-control" value="{{ year }}">
+          </div>
+          <div class="col-md-2 mr-3">
+            <label for="private">Тип репозитория</label>
+            <select name="private" id="private" class="form-control">
+              <option value='0' selected="selected">Public</option>
+              <option value='1'>Private</option>
+            </select>
           </div>
           <div class="col-md-2 mr-3">
             <label for="table">Номер группы</label>

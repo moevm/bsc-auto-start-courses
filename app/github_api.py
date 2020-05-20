@@ -1,5 +1,6 @@
 from flask import render_template, flash, redirect, session, url_for, request, g, Markup
 import os
+import flask
 from app import app
 from app import google_api
 
@@ -12,9 +13,9 @@ from flask_dance.contrib.github import make_github_blueprint, github
 
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
-CLIENT_ID_GITHUB = ''
-CLIENT_SECRET_GITHUB = ''
-SCOPES_GITHUN = 'repo'
+CLIENT_ID_GITHUB = 'b7642ad896f5597b5f6b'
+CLIENT_SECRET_GITHUB = '14320921a9af8e0c15a1f2c59ea8eaae043f33e7'
+SCOPES_GITHUN = 'admin:org,repo,user'
 
 github_blueprint = make_github_blueprint(client_id=CLIENT_ID_GITHUB,
                                          client_secret=CLIENT_SECRET_GITHUB,
@@ -73,10 +74,24 @@ def create_template_repo():
       subject = request.form['subject']
       year = request.form['year']
       group = request.form['table']
+      private = bool(int(request.form['private']))
       name = subject + '-' + year + '-' + group
-      create_new_repo_by_template = github.post('/repos/spasartyom/Hello-World/generate', json={"name": name, "description": 'This repository is created by template'}, headers={"Accept": 'application/vnd.github.baptiste-preview+json'})
+      test_in = github.post('/orgs/test-for-docker/repos', json={"name": name, "private": private, "auto_init": 'true'})
+      if test_in.status_code == 201:
+        invite_team_one = github.put('/orgs/moevm/teams/cs-teacher/repos/moevm/' + name, json={"permission": 'admin'})
+        invite_team_two = github.put('/orgs/moevm/teams/pr-teacher/repos/moevm/' + name, json={"permission": 'admin'})
+        invite_info = github.put('/repos/moevm/' + name + '/collaborators/moevm-pull-requests-checker', json={"permission": 'admin'})
+        item_db = google_api.db.groups.find({'group': int(group)})
+        items = [item for item in item_db]
+        spreadsheet_id = items[0]['table_id']
+        add_users(spreadsheet_id, name)
+        if invite_team_info_rep.status_code == 204:
+          return redirect(url_for('index'))
+      
       # pprint(create_new_repo_by_template.json())
-      return redirect(url_for('index'))
+      # return redirect(url_for('index'))
+      # return str(create_new_repo_by_template.json())
+      return 'smt bad'
   return 'smt bad'
 
 @app.route('/test-github-invite')
@@ -88,3 +103,42 @@ def invite_user():
       # pprint(invite_info.json())
       return 'info in console'
   return 'smt bad'
+
+def add_users(ss_id, rep_name):
+  if 'credentials' not in google_api.flask.session:
+    return google_api.flask.redirect('authorize')
+  # Load credentials from the session.
+  credentials = google_api.google.oauth2.credentials.Credentials(
+      **google_api.flask.session['credentials'])
+
+  ss = google_api.googleapiclient.discovery.build(
+      'sheets', 'v4', credentials=credentials)
+  
+  # spreadsheetId='1nCdFRoLyiP5gNNbi2dR_Z-y4w5KxGWdACcjr5oHmpnI',
+  # Пример чтения файла
+  response_ss = ss.spreadsheets().values().get(
+      spreadsheetId=ss_id,
+      range='A1:I20',
+      majorDimension='COLUMNS'
+  ).execute()
+  values = response_ss['values'][1]
+  list_emails = response_ss['values'][3]
+
+  notfound = []
+
+  for i in range(1, len(values)):
+    invite_info = github.put('/repos/moevm/' + rep_name + '/collaborators/' + values[i])
+    if invite_info.status_code == 404:
+      notfound.append(list_emails[i])
+    
+  notfound_emails = ','.join(notfound)
+
+  script = google_api.googleapiclient.discovery.build(
+      'script', 'v1', credentials=credentials)
+  
+  API_ID = "MwNcL5k4su6HQgR_MGSBhaEiAo2eQ3wDV"
+  SCRIPT_ID = "1xeBCg0u5RHuBEix-I_I9vdNMH-MOUWo3M9yqYfzzgwxHIasrT9kNoqh3"
+  body = {"function": "sendMail", "devMode": True,
+          "parameters": notfound_emails}
+  
+  response = script.scripts().run(body=body, scriptId=SCRIPT_ID).execute()
