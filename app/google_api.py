@@ -78,9 +78,11 @@ def index():
   items_tables = [item for item in _items_tables]
   _items_groups = db.groups.find()
   items_groups = [item for item in _items_groups]
+  _items_githubs = db.github.find()
+  items_githubs = [item for item in _items_githubs]
   now = datetime.datetime.now()
   year = now.year
-  return render_template('index.html', form=form, items_tables=items_tables, items_groups=items_groups, year=year)
+  return render_template('index.html', form=form, items_tables=items_tables, items_groups=items_groups, items_githubs=items_githubs, year=year)
   # return print_index_table()
 
 
@@ -105,7 +107,6 @@ def test_api_request():
   list_of_groups = request.form['groups'].split(',')
   # # Instead macro_test select your macro function name 
   # # from step 5 in Sheets/Script section
-  # testmail = "tovberia98@gmail.com"
   testmail = request.form['emails']
   body = {"function": "createForm", "devMode": True,
           "parameters": testmail} 
@@ -134,8 +135,13 @@ def fill_db():
   #   'list_of_groups': [6381, 6382],
   #   'table_id': '13-7o2vG41cjKmbushJlgncHQlAL-a1TPL4HFGIMLvV0'
   # }
-  db.groups.insert_one({'group': 6381,
-                          'table_id': '1nCdFRoLyiP5gNNbi2dR_Z-y4w5KxGWdACcjr5oHmpnI'})
+  d# db.groups.insert_one({'group': 6381,
+  #                         'table_id': '1nCdFRoLyiP5gNNbi2dR_Z-y4w5KxGWdACcjr5oHmpnI'})
+  db.github.insert_one({
+    'repo': 'ooop-2020-6381',
+    'group': '6381',
+    'table_id': '1nCdFRoLyiP5gNNbi2dR_Z-y4w5KxGWdACcjr5oHmpnI'
+  })
   return redirect(url_for('index'))
 
 @app.route('/make-spreadsheets', methods=['POST'])
@@ -182,7 +188,7 @@ def make_spredsheets():
     "data": [
         {"range": "Лист1!A1:C1",
          "majorDimension": "ROWS",     # сначала заполнять ряды, затем столбцы (т.е. самые внутренние списки в values - это ряды)
-         "values": [['ФИО', 'github', 'stepik']]},
+         "values": [['ФИО', 'github', 'stepik', 'email']]},
     ]
     }).execute()
 
@@ -190,7 +196,7 @@ def make_spredsheets():
     testDict[testList[i]] = []
     for row in values['values']:
       if row[4] == str(testList[i]):
-        testDict[testList[i]].append([row[1] + ' ' + row[2] + ' ' + row[3], row[7], row[8]])
+        testDict[testList[i]].append([row[1] + ' ' + row[2] + ' ' + row[3], row[7], row[8], row[6]])
     tmpSSId = testSS[testList[i]].get('spreadsheetId')
     results = ss.spreadsheets().values().batchUpdate(spreadsheetId = tmpSSId, body = {
     "valueInputOption": "USER_ENTERED",
