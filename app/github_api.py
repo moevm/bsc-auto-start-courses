@@ -78,10 +78,10 @@ def create_template_repo():
       name = subject + '-' + year + '-' + group
       test_in = github.post('/orgs/test-for-docker/repos', json={"name": name, "private": private, "auto_init": 'true'})
       if test_in.status_code == 201:
-        add_protect_rule(name)
         invite_team_one = github.put('/orgs/moevm/teams/cs-teacher/repos/moevm/' + name, json={"permission": 'admin'})
         invite_team_two = github.put('/orgs/moevm/teams/pr-teacher/repos/moevm/' + name, json={"permission": 'admin'})
         invite_info = github.put('/repos/moevm/' + name + '/collaborators/moevm-pull-requests-checker', json={"permission": 'admin'})
+        add_protect_rule(name)
         item_db = google_api.db.groups.find({'group': int(group)})
         items = [item for item in item_db]
         spreadsheet_id = items[0]['table_id']
