@@ -3,6 +3,7 @@ import os
 import flask
 from app import app
 from app import google_api
+from flask_csv import send_csv
 
 # for FlaskForm
 from flask_wtf import FlaskForm
@@ -93,9 +94,11 @@ def create_template_repo():
         invite_team_two = github.put('/orgs/moevm/teams/pr-teacher/repos/moevm/' + name, json={"permission": 'admin'})
         invite_info = github.put('/repos/moevm/' + name + '/collaborators/moevm-pull-requests-checker', json={"permission": 'admin'})
         add_protect_rule(name)
-        add_users(spreadsheet_id, name)
-        if invite_team_info_rep.status_code == 204:
-          return redirect(url_for('index'))
+        data_csv = add_users(spreadsheet_id, name)
+        return send_csv(data_csv,
+                    "list_wrong_github.csv", ["FIO", "github", "email"])
+        # if invite_team_info_rep.status_code == 204:
+        #   return redirect(url_for('index'))
       
       # pprint(create_new_repo_by_template.json())
       # return redirect(url_for('index'))
@@ -121,9 +124,11 @@ def check_collab():
     for item in list_collab.json():
       list_invitee.append(item['invitee']['login'])
 
-    notificate_students(spreadsheet_id, repo_name, list_invitee)
+    data_csv = notificate_students(spreadsheet_id, repo_name, list_invitee)
+    return send_csv(data_csv,
+                    "list_github.csv", ["FIO", "github", "email"])
 
-    return redirect(url_for('index'))
+    # return redirect(url_for('index'))
   return 'smt bad'
 
 @app.route('/test-github-invite')
@@ -155,13 +160,16 @@ def add_users(ss_id, rep_name):
   ).execute()
   values = response_ss['values'][1]
   list_emails = response_ss['values'][3]
+  list_fio = response_ss['values'][0]
 
   notfound = []
+  final_data = []
 
   for i in range(1, len(values)):
     invite_info = github.put('/repos/moevm/' + rep_name + '/collaborators/' + values[i])
     if invite_info.status_code == 404:
       notfound.append(list_emails[i])
+      final_data.append({'FIO': list_fio[i], 'github': values[i], 'email': list_emails[i]})
     
   notfound_emails = ','.join(notfound)
 
@@ -172,8 +180,8 @@ def add_users(ss_id, rep_name):
   # SCRIPT_ID = "1xeBCg0u5RHuBEix-I_I9vdNMH-MOUWo3M9yqYfzzgwxHIasrT9kNoqh3"
   body = {"function": "sendMail", "devMode": True,
           "parameters": notfound_emails}
-  
   response = script.scripts().run(body=body, scriptId=SCRIPT_ID).execute()
+  return final_data
 
 
 def add_protect_rule(rep_name):
@@ -210,14 +218,17 @@ def notificate_students(ss_id, repo_name, list_invitee):
       range='A1:I20',
       majorDimension='COLUMNS'
   ).execute()
+  list_fio = response_ss['values'][0]
   values = response_ss['values'][1]
   list_emails = response_ss['values'][3]
 
   final_emails = []
+  final_data = []
 
   for i in range(1, len(values)):
     if values[i] in list_invitee:
       final_emails.append(list_emails[i])
+      final_data.append({'FIO': list_fio[i], 'github': values[i], 'email': list_emails[i]})
 
   final_emails = ','.join(final_emails)
 
@@ -228,3 +239,4 @@ def notificate_students(ss_id, repo_name, list_invitee):
           "parameters": [final_emails, repo_name]}
   
   response = script.scripts().run(body=body, scriptId=SCRIPT_ID).execute()
+  return final_data

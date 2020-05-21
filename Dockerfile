@@ -16,7 +16,7 @@ RUN apt-get install -y apache2 \
 #RUN pip3 install --upgrade pip3
 
 COPY ./app/requirements.txt /var/www/apache-flask/app/requirements.txt
-RUN pip3 install google-api-python-client google-auth-httplib2 google-auth-oauthlib oauth2client flask-wtf pymongo Flask-Dance
+RUN pip3 install google-api-python-client google-auth-httplib2 google-auth-oauthlib oauth2client flask-wtf pymongo Flask-Dance flask_csv
 RUN service mongodb start
 #RUN pip3 install -r /var/www/apache-flask/app/requirements.txt
 
