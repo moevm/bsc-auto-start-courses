@@ -186,7 +186,7 @@ def make_spredsheets():
     add_info_in_table = ss.spreadsheets().values().batchUpdate(spreadsheetId = tmpSSId, body = {
     "valueInputOption": "USER_ENTERED",
     "data": [
-        {"range": "Лист1!A1:C1",
+        {"range": "Лист1!A1:D1",
          "majorDimension": "ROWS",     # сначала заполнять ряды, затем столбцы (т.е. самые внутренние списки в values - это ряды)
          "values": [['ФИО', 'github', 'stepik', 'email']]},
     ]
@@ -201,7 +201,7 @@ def make_spredsheets():
     results = ss.spreadsheets().values().batchUpdate(spreadsheetId = tmpSSId, body = {
     "valueInputOption": "USER_ENTERED",
     "data": [
-        {"range": "Лист1!A2:C10",
+        {"range": "Лист1!A2:D10",
          "majorDimension": "ROWS",     # сначала заполнять ряды, затем столбцы (т.е. самые внутренние списки в values - это ряды)
          "values": testDict[testList[i]]},
     ]
@@ -233,7 +233,7 @@ def spreadsheets():
   ss = googleapiclient.discovery.build(
       'sheets', 'v4', credentials=credentials)
   
-  # Пример чтения файла
+  # Пример чтения файла, необходимо менять размерности
   values = ss.spreadsheets().values().get(
       spreadsheetId=spreadsheet_id,
       range='A1:I3',
