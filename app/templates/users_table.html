@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+{% block content %}
+<h4 class="mb-4">Список студентов и их статус первого решения задачи</h4>
+<table class="table">
+  <thead class="thead-dark">
+    <tr>
+      <th>ФИО</th>
+      <th>Дата начала</th>
+      <th>Статус</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for item in items %}
+    <tr>
+      <td>{{ item['fio'] }}</td>
+      <td>{{ item['date'] }}</td>
+      {% if item['status'] == 'Решено верно' %}
+      <td style="color:#25bb25">{{ item['status'] }}</td>
+      {% else %}
+      <td style="color:#ec4b4b">{{ item['status'] }}</td>
+      {% endif %}
+
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
