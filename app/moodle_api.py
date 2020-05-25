@@ -28,7 +28,7 @@ def add_users_moodle():
     final_endpoint = endpoint + tmp_endpoint
     response_add = requests.get(final_endpoint)
   
-  return redirect(url_for('index'))
+  return redirect(url_for('render_moodle'))
 
 
 
