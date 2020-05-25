@@ -1,0 +1,33 @@
+{% extends "layout.html" %}
+{% block content %}
+<h4 style="text-align: center;" class="mb-3 mt-4">Working with Moodle part<h4></h4>
+  <div style="font-size: 16px;">
+    <p>Выберете доступные курсы</p>
+
+    <form method="POST" action="/moodle-add" class="form-row align-items-end" style="font-size: 15px;">
+      <div class="col-md-4 mr-3">
+        <label for="course">Название курса</label>
+        <select name="course" id="course_id_select" class="form-control">
+          {% for item in courses %}
+
+          <option value="{{ item['id'] }}">{{ item['name'] }} </option>
+
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-2">
+        <label for="groups">Номер группы</label>
+        <select name="groups" id="groups_id_select" class="form-control">
+          {% for item in groups %}
+
+          <option value="{{ item['table_id'] }}">{{ item['group'] }} </option>
+
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-4">
+        <input type="submit" value="Add students" class="btn btn-primary ml-3" style="width: 130px;">
+      </div>
+    </form>
+  </div>
+  {% endblock %}

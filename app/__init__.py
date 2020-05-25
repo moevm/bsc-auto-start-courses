@@ -5,4 +5,5 @@ app = Flask(__name__)
 from app import routes
 from app import google_api
 from app import github_api
+from app import moodle_api
 
