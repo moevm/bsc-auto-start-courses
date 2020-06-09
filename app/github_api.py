@@ -17,8 +17,8 @@ os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 API_ID = "MwNcL5k4su6HQgR_MGSBhaEiAo2eQ3wDV"
 SCRIPT_ID = "1xeBCg0u5RHuBEix-I_I9vdNMH-MOUWo3M9yqYfzzgwxHIasrT9kNoqh3"
 
-CLIENT_ID_GITHUB = 'b7642ad896f5597b5f6b'
-CLIENT_SECRET_GITHUB = '14320921a9af8e0c15a1f2c59ea8eaae043f33e7'
+CLIENT_ID_GITHUB = 'client_id'
+CLIENT_SECRET_GITHUB = 'client_secret'
 SCOPES_GITHUN = 'admin:org,repo,user'
 
 github_blueprint = make_github_blueprint(client_id=CLIENT_ID_GITHUB,
